@@ -10,7 +10,7 @@ public class App {
     public static void main( String[] args ) {
         LOGGER.info("Program start!");
 
-        // TODO
+        LOGGER.info("Hello world!!!");
 
         LOGGER.info("End of program!");
     }
