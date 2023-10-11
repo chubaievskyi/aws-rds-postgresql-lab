@@ -5,6 +5,7 @@ target/
 
 ### IntelliJ IDEA ###
 .idea/
+logfiles/
 *.iws
 *.iml
 *.ipr
