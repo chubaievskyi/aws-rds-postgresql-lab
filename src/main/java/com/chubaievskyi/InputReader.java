@@ -8,57 +8,43 @@ import java.util.Properties;
 public class InputReader {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(InputReader.class);
-    private static final int DEFAULT_NUMBER_OF_MESSAGES = 10001;
-    private String wireLevelEndpoint;
+
+    private String url;
     private String username;
     private String password;
-    private String queueName;
-    private long stopTime;
-    private int numberOfProducer;
-    private int numberOfConsumer;
-    private String validFilePath;
-    private String invalidFilePath;
-
-    private int numberOfMessages;
+    private int poolSize;
+    private String productType;
 
     private final Properties properties;
+
     public InputReader(Properties properties) {
         this.properties = properties;
-        checkNumberOfMessages();
         readPropertiesValue();
+        checkProductType();
     }
 
-    private void checkNumberOfMessages() {
-        String numberOfMessagesProperty = System.getProperty("nm");
-        if (numberOfMessagesProperty == null) {
-            LOGGER.error("The number of messages to be generated is not specified. " +
-                    "The default number (10001) will be generated.");
-            numberOfMessages = DEFAULT_NUMBER_OF_MESSAGES;
+    private void checkProductType() {
+        String systemProductType = System.getProperty("type");
+        if (systemProductType == null) {
+            LOGGER.error("The type of product for which to analyze is not specified." +
+                    "The default type ({}) will be used.", productType);
         } else {
-            try {
-                numberOfMessages = Integer.parseInt(numberOfMessagesProperty);
-                LOGGER.info("{} notifications will be generated.", numberOfMessages);
-            } catch (NumberFormatException e) {
-                LOGGER.error("The number of messages to be generated is incorrect.", e);
-            }
+                productType = systemProductType;
+                LOGGER.info("The product type - ({}) - will be used for analysis.", productType);
         }
     }
 
     private void readPropertiesValue() {
         LOGGER.info("Read the values of properties.");
-        wireLevelEndpoint = properties.getProperty("wire.level.endpoint");
-        username = properties.getProperty("user.name");
-        password = properties.getProperty("password");
-        queueName = properties.getProperty("queue.name");
-        stopTime = Long.parseLong(properties.getProperty("stop.time"));
-        numberOfProducer = Integer.parseInt(properties.getProperty("number.of.producer"));
-        numberOfConsumer = Integer.parseInt(properties.getProperty("number.of.consumer"));
-        validFilePath = properties.getProperty("valid.file.path");
-        invalidFilePath = properties.getProperty("invalid.file.path");
+        url = properties.getProperty("db.url");
+        username = properties.getProperty("db.username");
+        password = properties.getProperty("db.password");
+        poolSize = Integer.parseInt(properties.getProperty("db.pool.size"));
+        productType = properties.getProperty("db.default.product.type");
     }
 
-    public String getWireLevelEndpoint() {
-        return wireLevelEndpoint;
+    public String getUrl() {
+        return url;
     }
 
     public String getUsername() {
@@ -69,31 +55,11 @@ public class InputReader {
         return password;
     }
 
-    public int getNumberOfMessages() {
-        return numberOfMessages;
+    public int getPoolSize() {
+        return poolSize;
     }
 
-    public String getQueueName() {
-        return queueName;
-    }
-
-    public long getStopTime() {
-        return stopTime;
-    }
-
-    public int getNumberOfProducer() {
-        return numberOfProducer;
-    }
-
-    public int getNumberOfConsumer() {
-        return numberOfConsumer;
-    }
-
-    public String getValidFilePath() {
-        return validFilePath;
-    }
-
-    public String getInvalidFilePath() {
-        return invalidFilePath;
+    public String getProductType() {
+        return productType;
     }
 }

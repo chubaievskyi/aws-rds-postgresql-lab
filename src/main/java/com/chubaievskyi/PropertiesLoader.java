@@ -18,13 +18,13 @@ public class PropertiesLoader {
 
     public Properties loadProperties() {
         try {
-            InputStream input = getClass().getClassLoader().getResourceAsStream("config.properties");
+            InputStream input = getClass().getClassLoader().getResourceAsStream("application.properties");
 
             if (input != null) {
                 properties.load(input);
-                LOGGER.info("Loaded properties from config.properties in classpath");
+                LOGGER.info("Loaded properties from application.properties in classpath");
             } else {
-                LOGGER.info("config.properties not found in classpath, please check the classpath and file .properties");
+                LOGGER.info("application.properties not found in classpath, please check the classpath and file .properties");
                 System.exit(0);
             }
         } catch (IOException e) {
