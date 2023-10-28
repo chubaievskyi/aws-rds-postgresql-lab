@@ -1,13 +1,17 @@
-package com.chubaievskyi;
+package com.chubaievskyi.util;
 
+import lombok.Getter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
+@Getter
 public class InputReader {
 
     public static final Logger LOGGER = LoggerFactory.getLogger(InputReader.class);
+    private static final Properties PROPERTIES = new PropertiesLoader().loadProperties();
+    private static final InputReader INSTANCE = new InputReader();
 
     private String url;
     private String username;
@@ -15,12 +19,13 @@ public class InputReader {
     private int poolSize;
     private String productType;
 
-    private final Properties properties;
-
-    public InputReader(Properties properties) {
-        this.properties = properties;
+    private InputReader() {
         readPropertiesValue();
         checkProductType();
+    }
+
+    public static InputReader getInstance() {
+        return INSTANCE;
     }
 
     private void checkProductType() {
@@ -36,30 +41,10 @@ public class InputReader {
 
     private void readPropertiesValue() {
         LOGGER.info("Read the values of properties.");
-        url = properties.getProperty("db.url");
-        username = properties.getProperty("db.username");
-        password = properties.getProperty("db.password");
-        poolSize = Integer.parseInt(properties.getProperty("db.pool.size"));
-        productType = properties.getProperty("db.default.product.type");
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public int getPoolSize() {
-        return poolSize;
-    }
-
-    public String getProductType() {
-        return productType;
+        url = PROPERTIES.getProperty("db.url");
+        username = PROPERTIES.getProperty("db.username");
+        password = PROPERTIES.getProperty("db.password");
+        poolSize = Integer.parseInt(PROPERTIES.getProperty("db.pool.size"));
+        productType = PROPERTIES.getProperty("db.default.product.type");
     }
 }
