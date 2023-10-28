@@ -11,8 +11,8 @@ public class App {
 
         LOGGER.info("Program start!");
 
-//        JdbcRunner jdbcRunner = new JdbcRunner();
-//        jdbcRunner.run();
+        JdbcRunner jdbcRunner = new JdbcRunner();
+        jdbcRunner.run();
 
         LOGGER.info("End of program!");
     }

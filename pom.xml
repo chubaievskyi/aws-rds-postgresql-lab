@@ -81,6 +81,12 @@
       <artifactId>postgresql</artifactId>
       <version>42.6.0</version>
     </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.26</version>
+      <scope>provided</scope>
+    </dependency>
 
   </dependencies>
 
@@ -111,7 +117,7 @@
                 <filter>
                   <artifact>*:*</artifact>
                   <excludes>
-                    <exclude>**/config.properties</exclude>
+                    <exclude>**/application.properties</exclude>
                     <exclude>**/logback.xml</exclude>
                   </excludes>
                 </filter>
