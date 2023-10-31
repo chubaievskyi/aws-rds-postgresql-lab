@@ -18,6 +18,9 @@ public class InputReader {
     private String password;
     private int poolSize;
     private String productType;
+    private int numberOfShops;
+    private int numberOfProduct;
+    private int numberOfOptions;
 
     private InputReader() {
         readPropertiesValue();
@@ -46,5 +49,8 @@ public class InputReader {
         password = PROPERTIES.getProperty("db.password");
         poolSize = Integer.parseInt(PROPERTIES.getProperty("db.pool.size"));
         productType = PROPERTIES.getProperty("db.default.product.type");
+        numberOfShops = Integer.parseInt(PROPERTIES.getProperty("db.number.of.shops"));
+        numberOfProduct = Integer.parseInt(PROPERTIES.getProperty("db.number.of.product"));
+        numberOfOptions = Integer.parseInt(PROPERTIES.getProperty("db.number.of.options"));
     }
 }

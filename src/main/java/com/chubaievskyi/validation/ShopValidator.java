@@ -25,7 +25,7 @@ public class ShopValidator implements ConstraintValidator<ShopValidation, ShopDT
 
         boolean isValidCity = validateCity(shopDTO.getCity());
         boolean isValidStreet = validateStreet(shopDTO.getStreet());
-        boolean isValidNumber = validateNumber(shopDTO.getNumber());
+        boolean isValidNumber = validateNumber(Integer.parseInt(shopDTO.getNumber()));
 
         return isValidStreet && isValidCity && isValidNumber;
     }
