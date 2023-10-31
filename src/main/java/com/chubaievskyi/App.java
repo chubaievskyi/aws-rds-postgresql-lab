@@ -13,8 +13,9 @@ public class App {
 
         LOGGER.info("Program start!");
 
-        JdbcRunner jdbcRunner = new JdbcRunner();
-        jdbcRunner.run();
+        DBCreator dbCreator = new DBCreator();
+        dbCreator.run();
+
 
         for (int i = 0; i < 20; i++) {
             ShopDTO shop = new DTOGenerator().generateRandomShop();
@@ -25,8 +26,6 @@ public class App {
             ProductDTO product = new DTOGenerator().generateRandomProduct();
             System.out.println(product.getName() + " + " + product.getCategory());
         }
-
-
 
 
 
