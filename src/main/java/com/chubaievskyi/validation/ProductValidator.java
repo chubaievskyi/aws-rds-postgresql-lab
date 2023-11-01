@@ -1,6 +1,5 @@
 package com.chubaievskyi.validation;
 
-
 import com.chubaievskyi.dto.ProductDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -10,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class ProductValidator implements ConstraintValidator<ProductValidation, ProductDTO> {
 
-    public static final String REGEX = "^[a-zA-Z]+$";
+    public static final String REGEX = "^[^,&]*$";
     public static final Pattern pattern = Pattern.compile(REGEX);
 
     @Override
@@ -18,7 +17,6 @@ public class ProductValidator implements ConstraintValidator<ProductValidation, 
         if (productDTO == null) {
             return false;
         }
-
         if (constraintValidatorContext == null) {
             return false;
         }
@@ -30,19 +28,10 @@ public class ProductValidator implements ConstraintValidator<ProductValidation, 
     }
 
     public static boolean validateName(String name) {
-
-        if (name.length() >= 7) {
-            for (char c : name.toCharArray()) {
-                if (c == 'a') {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return name.length() >= 7;
     }
 
     public static boolean validateCategory(String street) {
-
         Matcher matcher = pattern.matcher(street);
         return matcher.matches();
     }

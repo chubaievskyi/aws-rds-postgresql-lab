@@ -14,7 +14,7 @@ public class TableGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TableGenerator.class);
 
 
-    public void run() {
+    public void createTables() {
 
         LOGGER.info("Method run() class TableGenerator start!");
 

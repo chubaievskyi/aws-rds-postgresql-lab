@@ -1,43 +1,74 @@
 package com.chubaievskyi;
 
-import com.chubaievskyi.exceptions.DatabaseExecutionException;
 import com.chubaievskyi.util.InputReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class DBCreator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DBCreator.class);
     private static final InputReader INPUT_READER = InputReader.getInstance();
+    private static final int NUMBER_OF_LINES = INPUT_READER.getTotalNumberOfLines();
     private static final String PRODUCT_TYPE = INPUT_READER.getProductType();
-
+    private static final int NUMBER_OF_THREADS = INPUT_READER.getNumberOfThreads();
 
     public void run() {
-
         LOGGER.info("Method run() class DBCreator start!");
+        createTablesAndValue();
+
+        ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
+
+        long startTimeExecutor = System.currentTimeMillis();
+        for (int i = 0; i < NUMBER_OF_THREADS; i++) {
+            RandomDataPlaceholder randomDataPlaceholder = new RandomDataPlaceholder(NUMBER_OF_LINES);
+            executor.submit(randomDataPlaceholder);
+        }
+
+        shutdownAndAwaitTermination(executor);
+        long endTimeExecutor = System.currentTimeMillis();
+
+        findShopWithLargestNumberOfProducts();
+        printResult(startTimeExecutor, endTimeExecutor);
+    }
+
+    private void createTablesAndValue() {
 
         TableGenerator tableGenerator = new TableGenerator();
-        tableGenerator.run();
+        tableGenerator.createTables();
 
         ValueGenerator valueGenerator = new ValueGenerator();
-        valueGenerator.run();
+        valueGenerator.generateValue();
+    }
 
+    private void shutdownAndAwaitTermination(ExecutorService executor) {
 
+        executor.shutdown();
+        try {
+            if (!executor.awaitTermination( Long.MAX_VALUE, TimeUnit.SECONDS)) {
+                LOGGER.error("Not all executor threads have terminated.");
+            }
+        } catch (InterruptedException e) {
+            LOGGER.debug("Executor service interrupted for executor threads.", e);
+            executor.shutdownNow();
+            Thread.currentThread().interrupt();
+        }
+    }
 
-//        String sql = "CREATE TABLE IF NOT EXISTS test (id_test INT, name_test VARCHAR(50))";
-//        String sql2 = "DROP TABLE IF EXISTS test";
-//
-//        try (Connection connection = ConnectionManager.get();
-//             PreparedStatement prepareStatement = connection.prepareStatement(sql)) {
-//            System.out.println(connection.getSchema());
-//            boolean executeResult = prepareStatement.execute();
-//            System.out.println(connection.getTransactionIsolation());
-//            System.out.println(executeResult);
-//        } catch (SQLException e) {
-//            throw new DatabaseExecutionException("Database query execution error", e);
-//        }
+    private void findShopWithLargestNumberOfProducts() {
 
+    }
+
+    private void printResult(long startTimeExecutor, long endTimeExecutor) {
+        double executorTime = (double) (endTimeExecutor - startTimeExecutor) / 1000;
+        LOGGER.info("Product generation time in stores - (sec) - {}", executorTime);
+        LOGGER.info("Number of generate lines - {}", NUMBER_OF_LINES);
+
+        double averageGenerateSpeed = NUMBER_OF_LINES / executorTime;
+        String formattedAverageGenerateSpeed = String.format("%.2f", averageGenerateSpeed);
+        LOGGER.info("Average speed of generate lines (lines per second) - {}", formattedAverageGenerateSpeed);
     }
 }
