@@ -1,6 +1,5 @@
 package com.chubaievskyi.validation;
 
-
 import com.chubaievskyi.dto.ShopDTO;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
@@ -10,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class ShopValidator implements ConstraintValidator<ShopValidation, ShopDTO> {
 
-    public static final String REGEX = "^[a-zA-Z]+$";
+    public static final String REGEX = "^[^0-9]*$";
     public static final Pattern pattern = Pattern.compile(REGEX);
 
     @Override
@@ -18,7 +17,6 @@ public class ShopValidator implements ConstraintValidator<ShopValidation, ShopDT
         if (shopDTO == null) {
             return false;
         }
-
         if (constraintValidatorContext == null) {
             return false;
         }
@@ -31,19 +29,10 @@ public class ShopValidator implements ConstraintValidator<ShopValidation, ShopDT
     }
 
     public static boolean validateCity(String name) {
-
-        if (name.length() >= 5) {
-            for (char c : name.toCharArray()) {
-                if (c == 'a') {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return name.length() >= 4;
     }
 
     public static boolean validateStreet(String street) {
-
         Matcher matcher = pattern.matcher(street);
         return matcher.matches();
     }

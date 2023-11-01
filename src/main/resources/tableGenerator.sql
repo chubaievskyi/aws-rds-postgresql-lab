@@ -38,9 +38,10 @@ CREATE TABLE IF NOT EXISTS products
     category_id INT REFERENCES category (id) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS products_in_shop
+CREATE TABLE IF NOT EXISTS products_in_shops
 (
     id SERIAL PRIMARY KEY,
     shop_id INT REFERENCES shops (id) ON DELETE CASCADE,
-    product_id INT REFERENCES products (id) ON DELETE CASCADE
+    product_id INT REFERENCES products (id) ON DELETE CASCADE,
+    quantity INT NOT NULL
 );

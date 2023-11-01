@@ -1,13 +1,18 @@
 package com.chubaievskyi;
 
+import com.chubaievskyi.dto.ProductDTO;
 import com.chubaievskyi.dto.ShopDTO;
 import com.chubaievskyi.exceptions.DatabaseExecutionException;
 import com.chubaievskyi.util.InputReader;
-import com.chubaievskyi.util.SQLQueryReader;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.Set;
 
 public class ValueGenerator {
 
@@ -15,19 +20,18 @@ public class ValueGenerator {
     private static final InputReader INPUT_READER = InputReader.getInstance();
     private static final int NUMBER_OF_SHOPS = INPUT_READER.getNumberOfShops();
     private static final int NUMBER_OF_PRODUCTS = INPUT_READER.getNumberOfProduct();
-    private static final int NUMBER_OF_OPTIONS = INPUT_READER.getNumberOfOptions();
-    DTOGenerator dtoGenerator = new DTOGenerator();
+    private static final DTOGenerator dtoGenerator = new DTOGenerator();
 
-    public void run() {
+    public void generateValue() {
 
         LOGGER.info("Method run() class ValueGenerator start!");
 
         try {
             generateShopValue();
+            generateProductValue();
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DatabaseExecutionException("Database query execution error", e);
         }
-        generateProductValue();
     }
 
     private void generateShopValue() throws SQLException {
@@ -39,23 +43,23 @@ public class ValueGenerator {
         try {
             while (shopCounter < NUMBER_OF_SHOPS) {
                 ShopDTO shop = dtoGenerator.generateRandomShop();
+                if (checkDTOBeforeTransfer(shop)) {
+                    int cityId = insertCity(connection, shop.getCity());
+                    int streetId = insertStreet(connection, shop.getStreet());
+                    int numberId = insertNumber(connection, shop.getNumber());
 
-                int cityId = insertCity(connection, shop.getCity());
-                int streetId = insertStreet(connection, shop.getStreet());
-                int numberId = insertNumber(connection, shop.getNumber());
+                    String checkQuery = "SELECT id FROM shops WHERE name = ?";
+                    int shopId = checkStatement(connection, checkQuery, shop.getName());
 
-                String checkQuery = "SELECT id FROM shops WHERE name = ?";
-                int shopId = checkStatement(connection, checkQuery, shop.getName());
-
-                if (shopId == 0) {
-                    insertShop(connection, shop.getName(), cityId, streetId, numberId);
-                    connection.commit();
-                    shopCounter++;
-                } else {
-                    connection.rollback();
+                    if (shopId == 0) {
+                        insertShop(connection, shop.getName(), cityId, streetId, numberId);
+                        connection.commit();
+                        shopCounter++;
+                    } else {
+                        connection.rollback();
+                    }
                 }
             }
-
         } catch (SQLException e) {
             connection.rollback();
             throw new DatabaseExecutionException("Database query execution error", e);
@@ -65,9 +69,19 @@ public class ValueGenerator {
         }
     }
 
+    private boolean checkDTOBeforeTransfer(Object obj) {
+
+        Validator validator;
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            validator = factory.getValidator();
+        }
+
+        Set<ConstraintViolation<Object>> violations = validator.validate(obj);
+        return violations.isEmpty();
+    }
+
     private void insertShop(Connection connection, String shopName, int cityId, int streetId, int numberId) {
         String sql = "INSERT INTO shops (name, city_id, street_id, number_id) VALUES (?, ?, ?, ?);";
-
         try (PreparedStatement prepareStatement = connection.prepareStatement(sql)) {
             prepareStatement.setString(1, shopName);
             prepareStatement.setInt(2, cityId);
@@ -102,11 +116,9 @@ public class ValueGenerator {
 
     private int checkStatement(Connection connection, String sql, String name) {
         int id = 0;
-
         try (PreparedStatement checkStatement = connection.prepareStatement(sql)) {
             checkStatement.setString(1, name);
             ResultSet checkResultSet = checkStatement.executeQuery();
-
             if (checkResultSet.next()) {
                 id = checkResultSet.getInt("id");
             } else {
@@ -115,17 +127,14 @@ public class ValueGenerator {
         } catch (SQLException e) {
             throw new DatabaseExecutionException("Database query execution error", e);
         }
-
         return id;
     }
 
     private int insertStatement(Connection connection, String sql, String name) {
         int id = 0;
-
         try (PreparedStatement insertStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             insertStatement.setString(1, name);
             insertStatement.executeUpdate();
-
             ResultSet generatedKeys = insertStatement.getGeneratedKeys();
             if (generatedKeys.next()) {
                 id = generatedKeys.getInt(1);
@@ -133,12 +142,57 @@ public class ValueGenerator {
         } catch (SQLException e) {
             throw new DatabaseExecutionException("Database query execution error", e);
         }
-
         return id;
     }
 
+    private void generateProductValue() throws SQLException {
+        int productCounter = 0;
 
-    private void generateProductValue() {
+        Connection connection = ConnectionManager.get();
+        connection.setAutoCommit(false);
 
+        try {
+            while (productCounter < NUMBER_OF_PRODUCTS) {
+                ProductDTO product = dtoGenerator.generateRandomProduct();
+                if (checkDTOBeforeTransfer(product)) {
+                    int categoryId = insertCategory(connection, product.getCategory());
+
+                    String checkQuery = "SELECT id FROM products WHERE name = ?";
+                    int productsId = checkStatement(connection, checkQuery, product.getName());
+
+                    if (productsId == 0) {
+                        insertProduct(connection, product.getName(), categoryId);
+                        connection.commit();
+                        productCounter++;
+                    } else {
+                        connection.rollback();
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            connection.rollback();
+            throw new DatabaseExecutionException("Database query execution error", e);
+        } finally {
+            connection.setAutoCommit(true);
+            connection.close();
+        }
+    }
+
+    private int insertCategory(Connection connection, String categoryName) {
+        String checkQuery = "SELECT id FROM category WHERE name = ?";
+        String insertQuery = "INSERT INTO category (name) VALUES (?)";
+        int categoryId = checkStatement(connection, checkQuery, categoryName);
+        return categoryId != 0 ? categoryId : insertStatement(connection, insertQuery, categoryName);
+    }
+
+    private void insertProduct(Connection connection, String productsName, int categoryId) {
+        String sql = "INSERT INTO products (name, category_id) VALUES (?, ?);";
+        try (PreparedStatement prepareStatement = connection.prepareStatement(sql)) {
+            prepareStatement.setString(1, productsName);
+            prepareStatement.setInt(2, categoryId);
+            prepareStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new DatabaseExecutionException("Database query execution error", e);
+        }
     }
 }

@@ -20,7 +20,9 @@ public class InputReader {
     private String productType;
     private int numberOfShops;
     private int numberOfProduct;
-    private int numberOfOptions;
+    private int totalNumberOfLines;
+    private int numberOfThreads;
+    private int maxNumberOfProductsSameCategory;
 
     private InputReader() {
         readPropertiesValue();
@@ -51,6 +53,8 @@ public class InputReader {
         productType = PROPERTIES.getProperty("db.default.product.type");
         numberOfShops = Integer.parseInt(PROPERTIES.getProperty("db.number.of.shops"));
         numberOfProduct = Integer.parseInt(PROPERTIES.getProperty("db.number.of.product"));
-        numberOfOptions = Integer.parseInt(PROPERTIES.getProperty("db.number.of.options"));
+        totalNumberOfLines = Integer.parseInt(PROPERTIES.getProperty("db.total.number.of.lines"));
+        numberOfThreads = Integer.parseInt(PROPERTIES.getProperty("db.number.of.threads"));
+        maxNumberOfProductsSameCategory = Integer.parseInt(PROPERTIES.getProperty("db.max.number.of.products.same.category"));
     }
 }
