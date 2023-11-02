@@ -21,6 +21,7 @@ public class ValueGenerator {
     private static final int NUMBER_OF_SHOPS = INPUT_READER.getNumberOfShops();
     private static final int NUMBER_OF_PRODUCTS = INPUT_READER.getNumberOfProduct();
     private static final DTOGenerator dtoGenerator = new DTOGenerator();
+    private final Validator validator = initializeValidator();
 
     public void generateValue() {
 
@@ -43,7 +44,7 @@ public class ValueGenerator {
         try {
             while (shopCounter < NUMBER_OF_SHOPS) {
                 ShopDTO shop = dtoGenerator.generateRandomShop();
-                if (checkDTOBeforeTransfer(shop)) {
+                if (checkDTOBeforeTransfer(shop, validator)) {
                     int cityId = insertCity(connection, shop.getCity());
                     int streetId = insertStreet(connection, shop.getStreet());
                     int numberId = insertNumber(connection, shop.getNumber());
@@ -69,13 +70,13 @@ public class ValueGenerator {
         }
     }
 
-    private boolean checkDTOBeforeTransfer(Object obj) {
-
-        Validator validator;
+    private Validator initializeValidator() {
         try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-            validator = factory.getValidator();
+            return factory.getValidator();
         }
+    }
 
+    private boolean checkDTOBeforeTransfer(Object obj, Validator validator) {
         Set<ConstraintViolation<Object>> violations = validator.validate(obj);
         return violations.isEmpty();
     }
@@ -154,7 +155,7 @@ public class ValueGenerator {
         try {
             while (productCounter < NUMBER_OF_PRODUCTS) {
                 ProductDTO product = dtoGenerator.generateRandomProduct();
-                if (checkDTOBeforeTransfer(product)) {
+                if (checkDTOBeforeTransfer(product, validator)) {
                     int categoryId = insertCategory(connection, product.getCategory());
 
                     String checkQuery = "SELECT id FROM products WHERE name = ?";
