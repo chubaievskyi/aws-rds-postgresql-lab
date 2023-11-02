@@ -1,7 +1,5 @@
 package com.chubaievskyi;
 
-import com.chubaievskyi.dto.ProductDTO;
-import com.chubaievskyi.dto.ShopDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,29 +11,15 @@ public class App {
 
         LOGGER.info("Program start!");
 
-        DBCreator dbCreator = new DBCreator();
-        dbCreator.run();
-
-
-        for (int i = 0; i < 20; i++) {
-            ShopDTO shop = new DTOGenerator().generateRandomShop();
-            System.out.println(shop.getName() + " + " + shop.getCity() + " + " + shop.getStreet() + " + " + shop.getNumber());
-        }
-
-        for (int i = 0; i < 20; i++) {
-            ProductDTO product = new DTOGenerator().generateRandomProduct();
-            System.out.println(product.getName() + " + " + product.getCategory());
-        }
-
-
+        new DBCreator().run();
 
         LOGGER.info("End of program!");
 
-
-        // todo логи валідатора не понятні!!!!!!!!!!!!!!!
         // todo select запит!!!!!!!!!!!!!!!
-        // todo загрузка батчами!!!!!!!!!!!!!!!
+        // todo виправити sql та properties файли на інстансі!!!!!!!!!!!!!!!
         // todo створити індекси!!!!!!!!!!!!!!!
-
+        // todo згрупувати по пекеджах!!!!!!!!!!!!!!!
+        // todo тести!!!!!!!!!!!!!!!
+        // todo SONAR!!!!!!!!!!!!!!!
     }
 }
