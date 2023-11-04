@@ -158,16 +158,16 @@ public class ValueGenerator {
                 if (checkDTOBeforeTransfer(product, validator)) {
                     int categoryId = insertCategory(connection, product.getCategory());
 
-                    String checkQuery = "SELECT id FROM products WHERE name = ?";
-                    int productsId = checkStatement(connection, checkQuery, product.getName());
+//                    String checkQuery = "SELECT id FROM products WHERE name = ?";
+//                    int productsId = checkStatement(connection, checkQuery, product.getName());
 
-                    if (productsId == 0) {
+//                    if (productsId == 0) {
                         insertProduct(connection, product.getName(), categoryId);
                         connection.commit();
                         productCounter++;
-                    } else {
-                        connection.rollback();
-                    }
+//                    } else {
+//                        connection.rollback();
+//                    }
                 }
             }
         } catch (SQLException e) {

@@ -29,16 +29,20 @@ public class ProductQueryExecutor {
                  PreparedStatement prepareStatement = connection.prepareStatement(query)) {
                 prepareStatement.setString(1, PRODUCT_TYPE);
 
+                long startTime = System.currentTimeMillis();
                 try (ResultSet resultSet = prepareStatement.executeQuery()) {
+                    long endTime = System.currentTimeMillis();
                     if (resultSet.next()) {
 
-                        String result = resultSet.getString("shop_name") + " " +
-                                resultSet.getString("city") + " " +
-                                resultSet.getString("street") + " " +
-                                resultSet.getString("number") + " " +
+                        String result = resultSet.getString("shop_name") + ", " +
+                                resultSet.getString("city") + ", " +
+                                resultSet.getString("street") + ", " +
+                                resultSet.getString("number") + ", quantity = " +
                                 resultSet.getInt("quantity");
+                        long resultTime = endTime - startTime;
 
                         LOGGER.info("The largest number of products in the {} category is in the store: {}", PRODUCT_TYPE, result);
+                        LOGGER.info("Query execution time : {}", resultTime);
                     } else {
                         LOGGER.info("No shop found for '{}' products.", PRODUCT_TYPE);
                     }
