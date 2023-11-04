@@ -1,5 +1,7 @@
 package com.chubaievskyi;
 
+import com.chubaievskyi.database.DBCreator;
+import com.chubaievskyi.database.ProductQueryExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,14 +14,14 @@ public class App {
         LOGGER.info("Program start!");
 
         new DBCreator().run();
+        new ProductQueryExecutor().findShopByCategory();
 
         LOGGER.info("End of program!");
 
-        // todo select запит!!!!!!!!!!!!!!!
+        // todo виправити (оптимізувати) select запит!!!!!!!!!!!!!!!
         // todo виправити sql та properties файли на інстансі!!!!!!!!!!!!!!!
         // todo створити індекси!!!!!!!!!!!!!!!
-        // todo згрупувати по пекеджах!!!!!!!!!!!!!!!
         // todo тести!!!!!!!!!!!!!!!
-        // todo SONAR!!!!!!!!!!!!!!!
+        // todo помилка читання файла пропертів (власний ексепшн)!!!!!!!!!!!!!!!
     }
 }

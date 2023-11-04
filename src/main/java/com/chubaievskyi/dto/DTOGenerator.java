@@ -1,7 +1,5 @@
-package com.chubaievskyi;
+package com.chubaievskyi.dto;
 
-import com.chubaievskyi.dto.ProductDTO;
-import com.chubaievskyi.dto.ShopDTO;
 import com.github.javafaker.Faker;
 
 import java.util.Locale;

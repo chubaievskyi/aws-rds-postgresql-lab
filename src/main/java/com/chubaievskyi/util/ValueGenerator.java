@@ -1,9 +1,9 @@
-package com.chubaievskyi;
+package com.chubaievskyi.util;
 
+import com.chubaievskyi.dto.DTOGenerator;
 import com.chubaievskyi.dto.ProductDTO;
 import com.chubaievskyi.dto.ShopDTO;
-import com.chubaievskyi.exceptions.DatabaseExecutionException;
-import com.chubaievskyi.util.InputReader;
+import com.chubaievskyi.exceptions.DBExecutionException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -25,13 +25,13 @@ public class ValueGenerator {
 
     public void generateValue() {
 
-        LOGGER.info("Method run() class ValueGenerator start!");
+        LOGGER.info("Method generateValue() class ValueGenerator start!");
 
         try {
             generateShopValue();
             generateProductValue();
         } catch (SQLException e) {
-            throw new DatabaseExecutionException("Database query execution error", e);
+            throw new DBExecutionException("Error database query execution (method ValueGenerator).", e);
         }
     }
 
@@ -63,7 +63,7 @@ public class ValueGenerator {
             }
         } catch (SQLException e) {
             connection.rollback();
-            throw new DatabaseExecutionException("Database query execution error", e);
+            throw new DBExecutionException("Database query execution error (method generateShopValue).", e);
         } finally {
             connection.setAutoCommit(true);
             connection.close();
@@ -90,7 +90,7 @@ public class ValueGenerator {
             prepareStatement.setInt(4, numberId);
             prepareStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseExecutionException("Database query execution error", e);
+            throw new DBExecutionException("Database query execution error (method insertShop).", e);
         }
     }
 
@@ -126,7 +126,7 @@ public class ValueGenerator {
                 return id;
             }
         } catch (SQLException e) {
-            throw new DatabaseExecutionException("Database query execution error", e);
+            throw new DBExecutionException("Database query execution error (method checkStatement).", e);
         }
         return id;
     }
@@ -141,7 +141,7 @@ public class ValueGenerator {
                 id = generatedKeys.getInt(1);
             }
         } catch (SQLException e) {
-            throw new DatabaseExecutionException("Database query execution error", e);
+            throw new DBExecutionException("Database query execution error (method insertStatement).", e);
         }
         return id;
     }
@@ -172,7 +172,7 @@ public class ValueGenerator {
             }
         } catch (SQLException e) {
             connection.rollback();
-            throw new DatabaseExecutionException("Database query execution error", e);
+            throw new DBExecutionException("Database query execution error (method generateProductValue).", e);
         } finally {
             connection.setAutoCommit(true);
             connection.close();
@@ -193,7 +193,7 @@ public class ValueGenerator {
             prepareStatement.setInt(2, categoryId);
             prepareStatement.executeUpdate();
         } catch (SQLException e) {
-            throw new DatabaseExecutionException("Database query execution error", e);
+            throw new DBExecutionException("Database query execution error (method insertProduct).", e);
         }
     }
 }
