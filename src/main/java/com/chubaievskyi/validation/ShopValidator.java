@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 public class ShopValidator implements ConstraintValidator<ShopValidation, ShopDTO> {
 
-    public static final String REGEX = "^[^0-9]*$";
+    public static final String REGEX = "^\\D*$";
     public static final Pattern pattern = Pattern.compile(REGEX);
 
     @Override

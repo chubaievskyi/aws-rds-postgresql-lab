@@ -1,5 +1,7 @@
-package com.chubaievskyi;
+package com.chubaievskyi.database;
 
+import com.chubaievskyi.util.RandomDataPlaceholder;
+import com.chubaievskyi.util.ValueGenerator;
 import com.chubaievskyi.util.InputReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +16,6 @@ public class DBCreator {
     private static final Logger LOGGER = LoggerFactory.getLogger(DBCreator.class);
     private static final InputReader INPUT_READER = InputReader.getInstance();
     private static final int NUMBER_OF_LINES = INPUT_READER.getTotalNumberOfLines();
-    private static final String PRODUCT_TYPE = INPUT_READER.getProductType();
     private static final int NUMBER_OF_THREADS = INPUT_READER.getNumberOfThreads();
     private final AtomicInteger rowCounter = new AtomicInteger(0);
 
@@ -31,9 +32,9 @@ public class DBCreator {
         }
 
         shutdownAndAwaitTermination(executor);
+        LOGGER.info("{} rows of data added!", rowCounter.get());
         long endTimeExecutor = System.currentTimeMillis();
 
-        findShopByCategory();
         printResult(startTimeExecutor, endTimeExecutor);
     }
 
@@ -58,10 +59,6 @@ public class DBCreator {
             executor.shutdownNow();
             Thread.currentThread().interrupt();
         }
-    }
-
-    private void findShopByCategory() {
-
     }
 
     private void printResult(long startTimeExecutor, long endTimeExecutor) {

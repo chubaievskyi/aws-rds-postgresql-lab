@@ -1,6 +1,7 @@
-package com.chubaievskyi;
+package com.chubaievskyi.database;
 
-import com.chubaievskyi.exceptions.DatabaseExecutionException;
+import com.chubaievskyi.exceptions.DBExecutionException;
+import com.chubaievskyi.util.ConnectionManager;
 import com.chubaievskyi.util.SQLQueryReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ public class TableGenerator {
                  PreparedStatement prepareStatement = connection.prepareStatement(query)) {
                 prepareStatement.execute();
             } catch (SQLException e) {
-                throw new DatabaseExecutionException("Database query execution error", e);
+                throw new DBExecutionException("Database query execution error", e);
             }
         }
     }

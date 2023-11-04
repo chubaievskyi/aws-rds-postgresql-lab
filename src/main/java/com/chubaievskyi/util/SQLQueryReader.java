@@ -29,7 +29,7 @@ public class SQLQueryReader {
                 StringBuilder queryBuilder = new StringBuilder();
                 String line;
                 while ((line = bufferedReader.readLine()) != null) {
-                    queryBuilder.append(line);
+                    queryBuilder.append(line).append("\n");
                     if (line.trim().endsWith(";")) {
                         queries.add(queryBuilder.toString());
                         queryBuilder.setLength(0);

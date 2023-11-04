@@ -1,7 +1,6 @@
-package com.chubaievskyi;
+package com.chubaievskyi.util;
 
-import com.chubaievskyi.exceptions.DatabaseExecutionException;
-import com.chubaievskyi.util.InputReader;
+import com.chubaievskyi.exceptions.DBExecutionException;
 import com.github.javafaker.Faker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +31,7 @@ public class RandomDataPlaceholder implements Runnable {
         try {
             generateProductsInShops();
         } catch (SQLException e) {
-            throw new DatabaseExecutionException("Database query execution error", e);
+            throw new DBExecutionException("Database query execution error.", e);
         }
     }
 
@@ -45,6 +44,7 @@ public class RandomDataPlaceholder implements Runnable {
              PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
 
             connection.setAutoCommit(false);
+            int count = 0;
             while (rowCounter.get() < numberOfLines) {
                 for (int i = 0; i < batchSize; i++) {
 
@@ -57,14 +57,18 @@ public class RandomDataPlaceholder implements Runnable {
                     preparedStatement.setInt(2, productId);
                     preparedStatement.setInt(3, quantity);
                     preparedStatement.addBatch();
+                    count++;
 
-                    if (rowCounter.get() % batchSize == 0 || rowCounter.get() >= numberOfLines) {
+                    if (count % batchSize == 0 || rowCounter.get() >= numberOfLines) {
                         break;
                     }
                 }
-                preparedStatement.executeBatch();
+                int[] updateCounts = preparedStatement.executeBatch();
+                preparedStatement.clearBatch();
                 connection.commit();
-                LOGGER.info("10_000 rows of data added!");
+                if (updateCounts.length > 0) {
+                    LOGGER.info("{} rows of data added!", updateCounts.length);
+                }
             }
             connection.setAutoCommit(true);
         }
