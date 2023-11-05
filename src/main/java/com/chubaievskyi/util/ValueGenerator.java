@@ -70,12 +70,6 @@ public class ValueGenerator {
         }
     }
 
-    private Validator initializeValidator() {
-        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
-            return factory.getValidator();
-        }
-    }
-
     private boolean checkDTOBeforeTransfer(Object obj, Validator validator) {
         Set<ConstraintViolation<Object>> violations = validator.validate(obj);
         return violations.isEmpty();
@@ -194,6 +188,12 @@ public class ValueGenerator {
             prepareStatement.executeUpdate();
         } catch (SQLException e) {
             throw new DBExecutionException("Database query execution error (method insertProduct).", e);
+        }
+    }
+
+    private Validator initializeValidator() {
+        try (ValidatorFactory factory = Validation.buildDefaultValidatorFactory()) {
+            return factory.getValidator();
         }
     }
 }

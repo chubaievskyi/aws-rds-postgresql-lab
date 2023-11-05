@@ -33,3 +33,23 @@ FROM max_quantity_shop ms
          JOIN city c ON s.city_id = c.id
          JOIN street st ON s.street_id = st.id
          JOIN number n ON s.number_id = n.id;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

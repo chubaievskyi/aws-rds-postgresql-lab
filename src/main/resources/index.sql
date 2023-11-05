@@ -18,3 +18,12 @@ DROP INDEX IF EXISTS idx_shop_name;
 DROP INDEX IF EXISTS idx_city_id;
 DROP INDEX IF EXISTS idx_street_id;
 DROP INDEX IF EXISTS idx_number_id;
+
+
+SELECT pg_size_pretty(pg_total_relation_size('products_in_shops')) AS total_size;
+SELECT pg_size_pretty(pg_total_relation_size('products')) AS total_size;
+SELECT pg_size_pretty(pg_total_relation_size('category')) AS total_size;
+SELECT pg_size_pretty(pg_total_relation_size('shops')) AS total_size;
+SELECT pg_size_pretty(pg_total_relation_size('city')) AS total_size;
+SELECT pg_size_pretty(pg_total_relation_size('street')) AS total_size;
+SELECT pg_size_pretty(pg_total_relation_size('number')) AS total_size;

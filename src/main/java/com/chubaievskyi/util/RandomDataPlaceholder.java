@@ -41,9 +41,7 @@ public class RandomDataPlaceholder implements Runnable {
     protected void generateProductsInShops(String insertQuery) throws SQLException {
 
         int batchSize = numberOfLines > 10_000 ? 10_000 : 1;
-//        String insertQuery = "INSERT INTO products_in_shops (shop_id, product_id, quantity) VALUES (?, ?, ?)";
 
-//        Connection connection = ConnectionManager.get();
         try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
 
             connection.setAutoCommit(false);
