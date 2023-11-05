@@ -42,7 +42,7 @@ public class ProductQueryExecutor {
                         long resultTime = endTime - startTime;
 
                         LOGGER.info("The largest number of products in the {} category is in the store: {}", PRODUCT_TYPE, result);
-                        LOGGER.info("Query execution time : {}", resultTime);
+                        LOGGER.info("Query execution time(ms) : {}", resultTime);
                     } else {
                         LOGGER.info("No shop found for '{}' products.", PRODUCT_TYPE);
                     }

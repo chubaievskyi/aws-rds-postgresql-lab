@@ -18,10 +18,13 @@ public class RandomDataPlaceholder implements Runnable {
     private final AtomicInteger rowCounter;
     private static final Faker RANDOM = new Faker();
     private final int numberOfLines;
+    private final String insertQuery = "INSERT INTO products_in_shops (shop_id, product_id, quantity) VALUES (?, ?, ?)";
+    private final Connection connection;
 
-    public RandomDataPlaceholder(int numberOfLines, AtomicInteger rowCounter){
+    public RandomDataPlaceholder(int numberOfLines, AtomicInteger rowCounter, Connection connection){
         this.numberOfLines = numberOfLines;
         this.rowCounter = rowCounter;
+        this.connection = connection;
     }
     @Override
     public void run() {
@@ -29,19 +32,19 @@ public class RandomDataPlaceholder implements Runnable {
         LOGGER.info("Method run() class RandomDataPlaceholder start!");
 
         try {
-            generateProductsInShops();
+            generateProductsInShops(insertQuery);
         } catch (SQLException e) {
             throw new DBExecutionException("Database query execution error.", e);
         }
     }
 
-    private void generateProductsInShops() throws SQLException {
+    protected void generateProductsInShops(String insertQuery) throws SQLException {
 
         int batchSize = numberOfLines > 10_000 ? 10_000 : 1;
-        String insertQuery = "INSERT INTO products_in_shops (shop_id, product_id, quantity) VALUES (?, ?, ?)";
+//        String insertQuery = "INSERT INTO products_in_shops (shop_id, product_id, quantity) VALUES (?, ?, ?)";
 
-        try (Connection connection = ConnectionManager.get();
-             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
+//        Connection connection = ConnectionManager.get();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
 
             connection.setAutoCommit(false);
             int count = 0;

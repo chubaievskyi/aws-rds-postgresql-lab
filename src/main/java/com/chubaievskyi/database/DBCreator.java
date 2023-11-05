@@ -1,11 +1,13 @@
 package com.chubaievskyi.database;
 
+import com.chubaievskyi.util.ConnectionManager;
 import com.chubaievskyi.util.RandomDataPlaceholder;
 import com.chubaievskyi.util.ValueGenerator;
 import com.chubaievskyi.util.InputReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -18,16 +20,17 @@ public class DBCreator {
     private static final int NUMBER_OF_LINES = INPUT_READER.getTotalNumberOfLines();
     private static final int NUMBER_OF_THREADS = INPUT_READER.getNumberOfThreads();
     private final AtomicInteger rowCounter = new AtomicInteger(0);
+    private final Connection connection = ConnectionManager.get();
 
     public void run() {
         LOGGER.info("Method run() class DBCreator start!");
+
         createTablesAndValue();
 
         ExecutorService executor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
-
         long startTimeExecutor = System.currentTimeMillis();
         for (int i = 0; i < NUMBER_OF_THREADS; i++) {
-            RandomDataPlaceholder randomDataPlaceholder = new RandomDataPlaceholder(NUMBER_OF_LINES, rowCounter);
+            RandomDataPlaceholder randomDataPlaceholder = new RandomDataPlaceholder(NUMBER_OF_LINES, rowCounter, connection);
             executor.submit(randomDataPlaceholder);
         }
 
@@ -41,7 +44,7 @@ public class DBCreator {
     private void createTablesAndValue() {
 
         TableGenerator tableGenerator = new TableGenerator();
-        tableGenerator.createTables();
+        tableGenerator.createTables("tableGenerator.sql", connection);
 
         ValueGenerator valueGenerator = new ValueGenerator();
         valueGenerator.generateValue();

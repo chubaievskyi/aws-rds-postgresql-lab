@@ -15,17 +15,16 @@ public class TableGenerator {
     private static final Logger LOGGER = LoggerFactory.getLogger(TableGenerator.class);
 
 
-    public void createTables() {
+    public void createTables(String path, Connection connection) {
 
         LOGGER.info("Method run() class TableGenerator start!");
 
-        SQLQueryReader reader = new SQLQueryReader("tableGenerator.sql");
+        SQLQueryReader reader = new SQLQueryReader(path);
 
         while (reader.hasNextQueries()) {
             String query = reader.getNextQuery();
-
-            try (Connection connection = ConnectionManager.get();
-                 PreparedStatement prepareStatement = connection.prepareStatement(query)) {
+//            Connection connection = ConnectionManager.get();
+            try (PreparedStatement prepareStatement = connection.prepareStatement(query)) {
                 prepareStatement.execute();
             } catch (SQLException e) {
                 throw new DBExecutionException("Database query execution error", e);
