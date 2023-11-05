@@ -38,6 +38,6 @@ public class ShopValidator implements ConstraintValidator<ShopValidation, ShopDT
     }
 
     public static boolean validateNumber(int count) {
-        return count <= 100;
+        return count <= 100 && count != 0;
     }
 }
