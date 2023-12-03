@@ -15,10 +15,11 @@ public class RandomDataPlaceholder implements Runnable {
     private static final int NUMBER_OF_SHOPS = INPUT_READER.getNumberOfShops();
     private static final int NUMBER_OF_PRODUCTS = INPUT_READER.getNumberOfProduct();
     private static final int MAX_QUANTITY = INPUT_READER.getMaxNumberOfProductsSameCategory();
+    private static final String INSERT_QUERY =
+            "INSERT INTO products_in_shops (shop_id, product_id, quantity) VALUES (?, ?, ?)";
     private final AtomicInteger rowCounter;
     private static final Faker RANDOM = new Faker();
     private final int numberOfLines;
-    private final String insertQuery = "INSERT INTO products_in_shops (shop_id, product_id, quantity) VALUES (?, ?, ?)";
     private final Connection connection;
 
     public RandomDataPlaceholder(int numberOfLines, AtomicInteger rowCounter, Connection connection){
@@ -32,13 +33,13 @@ public class RandomDataPlaceholder implements Runnable {
         LOGGER.info("Method run() class RandomDataPlaceholder start!");
 
         try {
-            generateProductsInShops(insertQuery);
+            generateProductsInShops(INSERT_QUERY);
         } catch (SQLException e) {
             throw new DBExecutionException("Database query execution error.", e);
         }
     }
 
-    protected void generateProductsInShops(String insertQuery) throws SQLException {
+    public void generateProductsInShops(String insertQuery) throws SQLException {
 
         int batchSize = numberOfLines > 10_000 ? 10_000 : 1;
 

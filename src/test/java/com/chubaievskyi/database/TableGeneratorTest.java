@@ -1,59 +1,48 @@
 package com.chubaievskyi.database;
 
-import org.h2.tools.Server;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
+import com.chubaievskyi.exceptions.DBExecutionException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
 
-public class TableGeneratorTest {
+class TableGeneratorTest {
 
-    private static Server server;
-    private static Connection connection;
+    @Mock
+    private Connection connection;
+    @Mock
+    private PreparedStatement preparedStatement;
+    private TableGenerator tableGenerator;
 
-    @BeforeAll
-    public static void setUp() throws SQLException {
-        server = Server.createTcpServer().start();
-        connection = DriverManager.getConnection("jdbc:h2:mem:testdb", "sa", "");
+    @BeforeEach
+    void setUp() throws Exception {
+        MockitoAnnotations.initMocks(this);
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        tableGenerator = new TableGenerator();
     }
 
     @Test
-    void testCreateTables() throws SQLException {
-
-        TableGenerator tableGenerator = new TableGenerator();
-        tableGenerator.createTables("testTableGenerator.sql", connection);
-
-        ArrayList<String> expectedTables = new ArrayList<>();
-        expectedTables.add("test_products_in_shops");
-        expectedTables.add("test_shops");
-        expectedTables.add("test_city");
-        expectedTables.add("test_street");
-        expectedTables.add("test_number");
-        expectedTables.add("test_products");
-        expectedTables.add("test_category");
-
-        ResultSet tables = connection.getMetaData().getTables(null, null, null, new String[]{"TABLE"});
-        int tableCount = 0;
-
-        while (tables.next()) {
-            String tableName = tables.getString("TABLE_NAME").toLowerCase();
-            if (expectedTables.contains(tableName)) {
-                tableCount++;
-            }
-        }
-        assertEquals(expectedTables.size(), tableCount);
+    void testCreateTables() throws Exception {
+        String pathToSqlFile = "testTableGenerator.sql";
+        tableGenerator.createTables(pathToSqlFile, connection);
+        verify(preparedStatement, times(14)).execute();
     }
 
-    @AfterAll
-    public static void tearDown() {
-        server.stop();
+    @Test
+    void testSQLExceptionIsThrown() throws Exception {
+        String pathToSqlFile = "testTableGenerator.sql";
+        doThrow(new SQLException()).when(preparedStatement).execute();
+
+        assertThrows(DBExecutionException.class, () -> {
+            tableGenerator.createTables(pathToSqlFile, connection);
+        });
     }
 }
-

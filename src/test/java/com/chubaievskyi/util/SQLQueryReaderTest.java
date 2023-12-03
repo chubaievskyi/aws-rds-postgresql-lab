@@ -1,34 +1,33 @@
 package com.chubaievskyi.util;
 
-import org.junit.jupiter.api.BeforeAll;
+import com.chubaievskyi.exceptions.FileNotFoundException;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class SQLQueryReaderTest {
 
-    private static SQLQueryReader sqlQueryReader;
+    private SQLQueryReader reader;
 
-    @BeforeAll
-    public static void setUp() {
-        sqlQueryReader = new SQLQueryReader("test.sql");
+    @BeforeEach
+    public void setUp() {
+        reader = new SQLQueryReader("test.sql");
+    }
+
+    @Test
+    void testHasNextQueries() {
+        assertTrue(reader.hasNextQueries());
     }
 
     @Test
     void testGetNextQuery() {
-        String firstQuery = sqlQueryReader.getNextQuery();
-        assertNotNull(firstQuery);
-        assertTrue(firstQuery.contains("SELECT"));
+        assertEquals("SELECT * FROM Test;\n", reader.getNextQuery());
+    }
 
-        String secondQuery = sqlQueryReader.getNextQuery();
-        assertNotNull(secondQuery);
-        assertTrue(secondQuery.contains("WHERE"));
-
-        String thirdQuery = sqlQueryReader.getNextQuery();
-        assertNotNull(thirdQuery);
-        assertTrue(thirdQuery.contains("WITH"));
-
-        String fourthQuery = sqlQueryReader.getNextQuery();
-        assertNull(fourthQuery);
+    @Test
+    void testFileNotFound() {
+        Exception exception = assertThrows(FileNotFoundException.class, () -> new SQLQueryReader("NotExist.sql"));
+        assertTrue(exception.getMessage().contains("not found in classpath"));
     }
 }

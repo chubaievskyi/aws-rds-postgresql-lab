@@ -1,5 +1,7 @@
 package com.chubaievskyi.util;
 
+import com.chubaievskyi.exceptions.FileNotFoundException;
+import com.chubaievskyi.exceptions.FileReadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,12 +11,12 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
-public class PropertiesLoader {
+public class PropertyLoader {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(PropertiesLoader.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(PropertyLoader.class);
     private final Properties properties;
 
-    public PropertiesLoader() {
+    public PropertyLoader() {
         properties = new Properties();
     }
 
@@ -26,11 +28,11 @@ public class PropertiesLoader {
                 properties.load(new InputStreamReader(input, StandardCharsets.UTF_8));
                 LOGGER.info("Loaded properties from application.properties in classpath");
             } else {
-                LOGGER.info("application.properties not found in classpath, please check the classpath and file .properties");
-                System.exit(0);
+                throw new FileNotFoundException("Application.properties not found in classpath, " +
+                        "please check the classpath and file .properties");
             }
         } catch (IOException e) {
-            LOGGER.error("Failed to read properties from file.", e);
+            throw new FileReadException("Failed to read properties from file.", e);
         }
 
         return properties;

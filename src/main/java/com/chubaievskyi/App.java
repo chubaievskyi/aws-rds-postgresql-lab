@@ -17,6 +17,7 @@ public class App {
         new ProductQueryExecutor().findShopByCategory();
         new DatabaseIndexManager().createIndex();
         new ProductQueryExecutor().findShopByCategory();
+        new ProductQueryExecutor().findShopByCategory();
         LOGGER.info("End of program!");
     }
 }
