@@ -1,5 +1,7 @@
 package com.chubaievskyi.util;
 
+import com.chubaievskyi.exceptions.FileNotFoundException;
+import com.chubaievskyi.exceptions.FileReadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,11 +38,11 @@ public class SQLQueryReader {
                     }
                 }
             } else {
-                LOGGER.info("{} not found in classpath, please check the classpath and file .sql", fileName);
-                System.exit(0);
+                throw new FileNotFoundException(fileName + " not found in classpath, " +
+                        "please check the classpath and file .sql");
             }
         } catch (IOException e) {
-            LOGGER.error("Failed to read properties from file.", e);
+            throw new FileReadException("Failed to read properties from file.", e);
         }
     }
 
